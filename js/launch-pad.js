@@ -5,8 +5,6 @@ class LaunchPad {
         this.assembly = null;
         this.simulation = null;
         this.isLaunched = false;
-        this.countdown = -1;
-        this.countdownTimer = null;
         
         // 节流阀控制
         this.throttle = 0; // 节流阀设置 (0-100%)
@@ -241,8 +239,8 @@ class LaunchPad {
             const landingBadge = document.createElement('div');
             landingBadge.className = 'landing-badge';
             landingBadge.textContent = window.i18n ? 
-                `✅ ${window.i18n.t('launchPad.status.landed')}` : 
-                '✅ 已着陆';
+                ` ${window.i18n.t('launchPad.status.landed')}` : 
+                ' 已着陆';
             landingBadge.style.cssText = `
                 position: absolute;
                 top: -30px;
@@ -951,10 +949,8 @@ class LaunchPad {
         const stageBtn = document.getElementById('stageBtn');
 
         if (launchBtn) {
-            launchBtn.disabled = this.isLaunched || this.countdown >= 0;
-            if (this.countdown >= 0) {
-                launchBtn.textContent = window.i18n ? window.i18n.t('launchPad.countdownInProgress') : '倒计时中...';
-            } else if (this.isLaunched) {
+            launchBtn.disabled = this.isLaunched;
+            if (this.isLaunched) {
                 launchBtn.textContent = window.i18n ? window.i18n.t('launchPad.launched') : '已发射';
             } else {
                 launchBtn.textContent = window.i18n ? window.i18n.t('launchPad.controls.launch') : '发射';
@@ -966,51 +962,21 @@ class LaunchPad {
         }
 
         if (abortBtn) {
-            abortBtn.disabled = !this.isLaunched && this.countdown < 0;
+            abortBtn.disabled = !this.isLaunched;
         }
     }
 
-    // 开始发射倒计时
+    // 开始发射倒计时（已移除，直接发射）
     startCountdown() {
-        if (this.countdown >= 0 || this.isLaunched) return;
+        if (this.isLaunched) return;
 
-        this.countdown = 3; // 3秒倒计时
-        const countdownText = document.getElementById('countdownText');
-        const countdownNumber = document.getElementById('countdownNumber');
-
-        if (countdownText) countdownText.textContent = window.i18n ? window.i18n.t('launchPad.launchCountdown') : '发射倒计时';
-        
-        this.updateControlButtons();
-
-        this.countdownTimer = setInterval(() => {
-            if (countdownNumber) {
-                countdownNumber.textContent = this.countdown;
-            }
-
-            if (this.countdown <= 0) {
-                this.executeLaunch();
-                return;
-            }
-
-            this.countdown--;
-        }, 1000);
+        // 直接执行发射，不再有倒计时
+        this.executeLaunch();
     }
 
     // 执行发射
     executeLaunch() {
-        if (this.countdownTimer) {
-            clearInterval(this.countdownTimer);
-            this.countdownTimer = null;
-        }
-
-        this.countdown = -1;
         this.isLaunched = true;
-
-        const countdownText = document.getElementById('countdownText');
-        const countdownNumber = document.getElementById('countdownNumber');
-
-        if (countdownText) countdownText.textContent = window.i18n ? window.i18n.t('launchPad.launch') : '发射！';
-        if (countdownNumber) countdownNumber.textContent = '🚀';
 
         // 启动物理模拟
         this.simulation = new LaunchSimulation(this.assembly);
@@ -1026,20 +992,10 @@ class LaunchPad {
         this.startFlightDataUpdate();
 
         this.updateControlButtons();
-
-        setTimeout(() => {
-            if (countdownText) countdownText.textContent = window.i18n ? window.i18n.t('launchPad.status.flying') : '飞行中';
-            if (countdownNumber) countdownNumber.textContent = '';
-        }, 3000);
     }
 
     // 中止发射
     abortLaunch() {
-        if (this.countdownTimer) {
-            clearInterval(this.countdownTimer);
-            this.countdownTimer = null;
-        }
-
         // 停止飞行数据更新
         this.stopFlightDataUpdate();
 
@@ -1048,21 +1004,9 @@ class LaunchPad {
             this.simulation = null;
         }
 
-        this.countdown = -1;
         this.isLaunched = false;
 
-        const countdownText = document.getElementById('countdownText');
-        const countdownNumber = document.getElementById('countdownNumber');
-
-        if (countdownText) countdownText.textContent = '任务中止';
-        if (countdownNumber) countdownNumber.textContent = '⚠️';
-
         this.updateControlButtons();
-
-        setTimeout(() => {
-            if (countdownText) countdownText.textContent = '准备发射';
-            if (countdownNumber) countdownNumber.textContent = '';
-        }, 3000);
     }
 
     // 显示错误信息
@@ -1071,7 +1015,6 @@ class LaunchPad {
         if (loadingOverlay) {
             loadingOverlay.innerHTML = `
                 <div style="text-align: center;">
-                    <div style="font-size: 2em; margin-bottom: 20px;">⚠️</div>
                     <div style="font-size: 1.2em; color: #ff6666; margin-bottom: 20px;">${message}</div>
                     <button onclick="goBackToAssembly()" style="
                         padding: 10px 20px;
@@ -1382,8 +1325,7 @@ class LaunchPad {
                 <div class="map-content" id="mapContent">
                     <svg id="mapSvg" viewBox="-400 -400 800 800">
                         <!-- 地球 -->
-                        <circle cx="0" cy="0" r="100" fill="#4CAF50" stroke="#2E7D32" stroke-width="2"/>
-                        <circle cx="0" cy="0" r="100" fill="url(#earthGradient)" opacity="0.8"/>
+                        <image x="-100" y="-100" width="200" height="200" href="imgs/earth.png"/>
                         
                         <!-- 大气层 -->
                         <circle cx="0" cy="0" r="120" fill="none" stroke="#87CEEB" stroke-width="1" opacity="0.5"/>
@@ -1404,26 +1346,13 @@ class LaunchPad {
                         
                         <!-- 月球 -->
                         <circle id="moonMarker" cx="257" cy="0" r="8" fill="#C0C0C0" stroke="#999" stroke-width="1"/>
-                        <text id="moonLabel" x="267" y="5" fill="#FFF" font-size="10">🌙</text>
+                        <text id="moonLabel" x="267" y="5" fill="#FFF" font-size="10"></text>
                         
                         <!-- 火箭位置 -->
                         <circle id="rocketMarker" cx="0" cy="-100" r="4" fill="#FF4444" stroke="#FFF" stroke-width="2"/>
                         <text id="rocketLabel" x="5" y="-95" fill="#FFF" font-size="12">🚀</text>
                         
-                        <!-- 渐变定义 -->
-                        <defs>
-                            <radialGradient id="earthGradient" cx="30%" cy="30%">
-                                <stop offset="0%" stop-color="#81C784"/>
-                                <stop offset="50%" stop-color="#4CAF50"/>
-                                <stop offset="100%" stop-color="#2E7D32"/>
-                            </radialGradient>
-                        </defs>
                     </svg>
-                </div>
-                <div class="map-controls">
-                    <button class="map-control-btn" id="mapResetBtn">🎯</button>
-                    <button class="map-control-btn" id="mapZoomInBtn">🔍+</button>
-                    <button class="map-control-btn" id="mapZoomOutBtn">🔍-</button>
                 </div>
                 <div class="map-info">
                     <div class="map-data">
@@ -2028,7 +1957,6 @@ class LaunchPad {
         if (this.simulation) {
             this.simulation.infiniteFuelMode = !this.simulation.infiniteFuelMode;
             const status = this.simulation.infiniteFuelMode ? '开启' : '关闭';
-            const emoji = this.simulation.infiniteFuelMode ? '♾️' : '⛽';
             
             console.log(`${emoji} 无限燃料模式: ${status}`);
             

@@ -1094,7 +1094,7 @@ class LaunchSimulation {
         // 如果成功入轨且之前未入轨，显示祝贺信息
         if (isInOrbit && !this.hasReachedOrbit) {
             this.hasReachedOrbit = true;
-            console.log(`🎉 成功入轨！`);
+            console.log(` 成功入轨！`);
             console.log(`轨道类型: ${orbitType}`);
             console.log(`轨道高度: ${(currentAltitude/1000).toFixed(1)}km`);
             console.log(`轨道速度: ${(orbitalVelocity/1000).toFixed(2)}km/s`);

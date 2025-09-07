@@ -1301,11 +1301,6 @@
         width: 16px;
         height: 16px;
     }
-    
-    /* 倒计时显示调整 */
-    .countdown-display {
-        font-size: 0.9em;
-    }
 }
 
 /* 超小屏幕（手机竖屏） */
@@ -1452,9 +1447,7 @@
         height: 14px;
     }
     
-    .countdown-display {
-        font-size: 0.8em;
-    }
+    /* 倒计时显示样式已移除 */
     
     /* 操作说明进一步缩小 */
     .hint-title {
@@ -1549,10 +1542,7 @@
     z-index: 1000;
 }
 
-.countdown-display {
-    text-align: center;
-    color: white;
-}
+/* 倒计时显示样式已移除 */
 
 .control-buttons-new {
     display: flex;
@@ -1664,19 +1654,7 @@
     transform: translate(-50%, -50%) scale(1.1);
 }
 
-.countdown-text {
-    font-size: 1.2em;
-    margin-bottom: 5px;
-    color: #87CEEB;
-}
-
-.countdown-number {
-    font-size: 2.5em;
-    font-weight: 700;
-    font-family: 'Courier New', monospace;
-    color: #ff6600;
-    text-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
-}
+/* 倒计时文本样式已移除 */
 
 .control-buttons {
     display: flex;
@@ -1814,9 +1792,7 @@
         font-size: 0.9em;
     }
     
-    .countdown-number {
-        font-size: 2em;
-    }
+    /* 倒计时数字样式已移除 */
 }
 
 @media (max-width: 480px) {

@@ -15,8 +15,8 @@ class LanguageSwitcher {
         };
         
         this.languages = [
-            { code: 'zh-CN', name: '简体中文', flag: '🇨🇳' },
-            { code: 'en-US', name: 'English', flag: '🇺🇸' }
+            { code: 'zh-CN', name: '简体中文', flag: 'cn' },
+            { code: 'en-US', name: 'English', flag: 'us' }
         ];
         
         this.init();
