@@ -1,0 +1,2609 @@
+/* 发射台页面样式 */
+
+.launch-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    background: #000011; /* 深空背景，让动态世界坐标系统负责背景 */
+}
+
+/* 世界背景容器（独立于火箭变换） */
+.world-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* ===========================
+   原有静态背景样式（已禁用）
+   =========================== */
+/*
+.background-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.sky-gradient {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(to bottom, 
+        #1e3c72 0%,
+        #2a5298 20%, 
+        #87CEEB 40%,
+        #87CEEB 100%);
+}
+
+.ground-layer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: linear-gradient(to bottom,
+        #90EE90 0%,
+        #32CD32 50%,
+        #228B22 100%);
+}
+*/
+
+.launch-tower {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 200px;
+    background: linear-gradient(to bottom, #666 0%, #333 100%);
+    border-radius: 2px 2px 0 0;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+
+.launch-tower::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -5px;
+    width: 30px;
+    height: 15px;
+    background: #666;
+    border-radius: 5px;
+}
+
+/* 火箭显示区域 */
+.rocket-display {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    overflow: hidden; /* 确保火箭在边界外不显示 */
+    transition: all 0.1s ease;
+}
+
+/* 发射台参考物 */
+.rocket-display::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 200px;
+    background: linear-gradient(to bottom, #666 0%, #333 100%);
+    border-radius: 2px 2px 0 0;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    z-index: 5;
+}
+
+/* 高度网格线（可选，帮助用户判断高度） */
+.altitude-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.altitude-grid::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%),
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 98px,
+            rgba(255,255,255,0.05) 98px,
+            rgba(255,255,255,0.05) 100px
+        );
+}
+
+.rocket-part {
+    position: absolute;
+    transition: all 0.1s ease;
+}
+
+.rocket-part svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+}
+
+/* 火焰效果 */
+.engine-flame {
+    /* 定位由JavaScript控制 */
+    width: 60%;
+    height: 0;
+    background: radial-gradient(ellipse at center,
+        #ff4500 0%,
+        #ff6600 30%,
+        #ff9900 60%,
+        transparent 100%);
+    border-radius: 0 0 50% 50%;
+    opacity: 0;
+    transition: all 0.1s ease;
+    filter: blur(2px);
+    pointer-events: none; /* 火焰不响应鼠标事件 */
+}
+
+.engine-flame.active {
+    opacity: 1;
+    height: 80px;
+    animation: flameFlicker 0.1s infinite alternate;
+}
+
+@keyframes flameFlicker {
+    0% { transform: translateX(-50%) scaleY(0.9) scaleX(0.95); }
+    100% { transform: translateX(-50%) scaleY(1.1) scaleX(1.05); }
+}
+
+/* 分离动画 */
+@keyframes separationEffect {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    50% { transform: translateY(20px) rotate(5deg); opacity: 0.8; }
+    100% { transform: translateY(50px) rotate(10deg); opacity: 0.3; }
+}
+
+/* 顶部控制栏 */
+.launch-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+    color: white;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.back-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.launch-title {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin: 0;
+}
+
+.rocket-name {
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #87CEEB;
+}
+
+/* 飞行数据面板 */
+.flight-data-panel {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    width: 200px;
+    background: rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 15px;
+    z-index: 100;
+    color: white;
+}
+
+.panel-header h3 {
+    margin: 0 0 15px 0;
+    color: #87CEEB;
+    font-size: 1.1em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 8px;
+}
+
+.data-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.data-label {
+    color: #ccc;
+}
+
+.data-value {
+    color: #87CEEB;
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+}
+
+.data-separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 12px 0;
+}
+
+/* 轨道信息部分样式 */
+.orbital-section {
+    margin-top: 8px;
+}
+
+.section-title {
+    font-size: 0.9em;
+    color: #4CAF50;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.orbital-section .data-item {
+    margin-bottom: 6px;
+}
+
+.orbital-section .data-value {
+    font-weight: bold;
+}
+
+#orbitType {
+    font-weight: bold;
+}
+
+/* 操作说明样式 */
+.controls-hint {
+    margin-top: 10px;
+}
+
+.hint-title {
+    font-size: 0.9em;
+    color: #87CEEB;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.hint-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    font-size: 0.75em;
+}
+
+.hint-keys {
+    background: rgba(59, 130, 246, 0.8);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.7em;
+    min-width: 40px;
+    text-align: center;
+}
+
+.hint-desc {
+    color: rgba(255, 255, 255, 0.8);
+    flex: 1;
+    text-align: right;
+}
+
+/* 节流阀控制面板 - 紧凑版本 */
+.throttle-control-panel.compact {
+    position: absolute;
+    top: 80px;
+    left: 340px;
+    width: 600px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.85);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px 20px;
+    z-index: 100;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.throttle-compact-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    height: 100%;
+}
+
+.throttle-label-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+}
+
+.throttle-label-section h4 {
+    margin: 0 0 5px 0;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.throttle-value-display {
+    padding: 5px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.throttle-percentage {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #4ade80;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+}
+
+.throttle-slider-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 300px;
+}
+
+.throttle-slider-horizontal {
+    position: relative;
+    height: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.throttle-track {
+    position: relative;
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.throttle-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0%;
+    background: linear-gradient(to right,
+        #4ade80 0%,
+        #22d3ee 50%,
+        #fbbf24 75%,
+        #f87171 100%);
+    border-radius: 3px;
+    transition: width 0.2s ease;
+}
+
+.throttle-handle {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    border: 2px solid #333;
+    border-radius: 50%;
+    cursor: grab;
+    transition: left 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.throttle-handle:active {
+    cursor: grabbing;
+    background: #f0f0f0;
+}
+
+.throttle-marks-horizontal {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2px;
+    padding: 0 8px;
+}
+
+.throttle-marks-horizontal .mark {
+    font-size: 0.7em;
+    color: rgba(255, 255, 255, 0.6);
+    position: relative;
+}
+
+.throttle-marks-horizontal .mark::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.throttle-controls-section {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 160px;
+}
+
+.throttle-keyboard-hint {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.7em;
+}
+
+/* 转向控制面板 */
+.steering-control-panel {
+    position: absolute;
+    top: 80px;
+    right: 260px; /* 在分级面板左边留出空间 */
+    width: 200px;
+    background: rgba(0, 0, 0, 0.85);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    z-index: 100;
+    color: white;
+}
+
+.steering-control-panel .panel-header h4 {
+    margin: 0 0 15px 0;
+    font-size: 1em;
+    font-weight: 600;
+    color: #87CEEB;
+    text-align: center;
+}
+
+/* 转向导航条 */
+.steering-navigation {
+    margin-bottom: 15px;
+}
+
+.nav-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-bar {
+    position: relative;
+    width: 140px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.nav-center {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.nav-pointer {
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 16px;
+    background: #87CEEB;
+    border-radius: 50%;
+    border: 2px solid white;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.nav-labels {
+    display: flex;
+    justify-content: space-between;
+    width: 140px;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.nav-label.center {
+    color: #87CEEB;
+    font-weight: bold;
+}
+
+/* 转向数值显示 */
+.steering-display {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+.steering-value {
+    font-size: 0.9em;
+    margin-bottom: 5px;
+}
+
+.steering-value #steeringAngle {
+    color: #87CEEB;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.steering-hint {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8em;
+}
+
+/* 触屏控制面板 */
+.touch-control-panel {
+    position: fixed;
+    bottom: 120px; /* 避免与底部控制面板重叠 */
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: transparent; /* 设置为透明背景 */
+    border-top: none; /* 移除边框 */
+    display: none; /* 默认隐藏，通过JavaScript检测触屏设备后显示 */
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+    /* 确保触摸事件能正常传递给子元素 */
+    pointer-events: auto;
+    touch-action: manipulation;
+}
+
+/* 通用触屏优化 */
+.touch-control-btn,
+.time-control-btn,
+.map-control-btn {
+    /* 防止触摸时的默认行为 */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* 防止触摸时的高亮效果 */
+    -webkit-tap-highlight-color: transparent;
+    /* 确保触摸事件正确处理 */
+    touch-action: manipulation;
+}
+
+/* 右上角控制按钮组 */
+.touch-control-buttons {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    z-index: 1001;
+    display: none; /* 默认隐藏 */
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+}
+
+.touch-control-buttons.active {
+    display: flex;
+}
+
+.touch-control-btn {
+    width: 60px;
+    height: 60px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    padding: 4px;
+    /* 确保触摸区域足够大 */
+    min-width: 44px;
+    min-height: 44px;
+    /* 防止触摸时的高亮效果 */
+    -webkit-tap-highlight-color: transparent;
+}
+
+.touch-control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.touch-control-btn:active {
+    transform: scale(0.95);
+}
+
+.touch-control-btn .touch-btn-icon {
+    font-size: 20px;
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.touch-control-btn .touch-btn-label {
+    font-size: 10px;
+    line-height: 1;
+    text-align: center;
+    opacity: 0.8;
+}
+
+/* 左侧时间加速控制 */
+.touch-time-controls {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.touch-time-controls.active {
+    display: flex;
+}
+
+.time-control-title {
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 4px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.time-control-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.time-control-btn {
+    width: 50px;
+    height: 35px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    font-size: 11px;
+    font-weight: bold;
+    /* 确保触摸区域足够大 */
+    min-width: 44px;
+    min-height: 32px;
+    /* 防止触摸时的高亮效果 */
+    -webkit-tap-highlight-color: transparent;
+}
+
+.time-control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.time-control-btn:active,
+.time-control-btn.active {
+    background: rgba(76, 175, 80, 0.8);
+    border-color: #4CAF50;
+    color: white;
+}
+
+/* 地图控制按钮 */
+.map-controls {
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    z-index: 1002;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.map-control-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    font-size: 14px;
+}
+
+.map-control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+}
+
+.map-control-btn:active {
+    transform: scale(0.95);
+}
+
+/* 发射按钮特殊样式 */
+.touch-launch-btn {
+    background: linear-gradient(135deg, 
+        rgba(0, 150, 0, 0.8) 0%, 
+        rgba(50, 200, 50, 0.8) 100%) !important;
+}
+
+.touch-launch-btn:hover {
+    background: linear-gradient(135deg, 
+        rgba(50, 200, 50, 0.9) 0%, 
+        rgba(100, 255, 100, 0.9) 100%) !important;
+}
+
+/* 分离按钮特殊样式 */
+.touch-stage-btn {
+    background: linear-gradient(135deg, 
+        rgba(255, 165, 0, 0.8) 0%, 
+        rgba(255, 200, 50, 0.8) 100%) !important;
+}
+
+.touch-stage-btn:hover {
+    background: linear-gradient(135deg, 
+        rgba(255, 200, 50, 0.9) 0%, 
+        rgba(255, 220, 100, 0.9) 100%) !important;
+}
+
+/* 中止按钮特殊样式 */
+.touch-abort-btn {
+    background: linear-gradient(135deg, 
+        rgba(220, 20, 20, 0.8) 0%, 
+        rgba(255, 50, 50, 0.8) 100%) !important;
+}
+
+.touch-abort-btn:hover {
+    background: linear-gradient(135deg, 
+        rgba(255, 50, 50, 0.9) 0%, 
+        rgba(255, 100, 100, 0.9) 100%) !important;
+}
+
+.touch-control-panel.active {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+/* 触屏控制标题 */
+.touch-control-title {
+    color: #87CEEB;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* 左侧转向控制区域 */
+.touch-steering-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 触摸转向按钮区域 */
+.touch-steering-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.touch-steering-btn {
+    width: 80px;
+    height: 80px;
+    border: 2px solid rgba(135, 206, 235, 0.3);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+    /* 确保触摸区域足够大 */
+    min-width: 60px;
+    min-height: 60px;
+}
+
+.touch-steering-btn .touch-btn-icon {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    line-height: 1;
+}
+
+.touch-steering-btn .touch-btn-label {
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1;
+}
+
+.touch-steering-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(135, 206, 235, 0.6);
+}
+
+.touch-steering-btn:active,
+.touch-steering-btn.active {
+    background: rgba(135, 206, 235, 0.8);
+    border-color: #87CEEB;
+    color: white;
+    transform: scale(0.95);
+}
+
+.touch-left-btn:active,
+.touch-left-btn.active {
+    background: rgba(255, 152, 0, 0.8); /* 橙色 - 左转 */
+    border-color: #FF9800;
+}
+
+.touch-right-btn:active,
+.touch-right-btn.active {
+    background: rgba(76, 175, 80, 0.8); /* 绿色 - 右转 */
+    border-color: #4CAF50;
+}
+
+.touch-angle-display {
+    color: #87CEEB;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+/* 右侧节流阀控制区域 */
+.touch-throttle-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.touch-throttle-slider {
+    position: relative;
+    width: 40px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    margin: 10px 0;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.touch-throttle-track {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.touch-throttle-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, #4CAF50, #8BC34A, #CDDC39);
+    border-radius: 15px;
+    height: 0%;
+    transition: height 0.1s ease;
+}
+
+.touch-throttle-handle {
+    position: absolute;
+    left: 50%;
+    bottom: 0%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 36px;
+    background: #87CEEB;
+    border: 3px solid white;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: bottom 0.1s ease;
+}
+
+.touch-throttle-display {
+    color: #87CEEB;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+/* 中央主要控制按钮 */
+.touch-main-controls {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.touch-main-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.touch-launch-btn {
+    background: linear-gradient(135deg, #4CAF50, #45a049);
+    color: white;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.touch-stage-btn {
+    background: linear-gradient(135deg, #FF9800, #F57C00);
+    color: white;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+}
+
+.touch-abort-btn {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    color: white;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+}
+
+.touch-main-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.touch-btn-icon {
+    font-size: 1.5em;
+    margin-bottom: 4px;
+}
+
+.touch-btn-text {
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+/* 响应式设计 - 在大屏幕上隐藏触屏控制 */
+@media (min-width: 1024px) and (hover: hover) {
+    .touch-control-panel {
+        display: none !important;
+    }
+    
+    /* 确保桌面端隐藏移动端专用元素 */
+    .mobile-only {
+        display: none !important;
+    }
+}
+
+/* 移动端响应式设计 */
+@media (max-width: 768px) {
+    /* 右上角控制按钮组移动端调整 */
+    .touch-control-buttons {
+        top: 55px;
+        right: 15px;
+        gap: 10px;
+    }
+    
+    .touch-control-btn {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .touch-control-btn .touch-btn-icon {
+        font-size: 20px;
+    }
+    
+    /* 顶部控制栏移动端优化 */
+    .launch-header {
+        height: 50px;
+        padding: 0 15px;
+        font-size: 0.9em;
+    }
+    
+    .launch-title {
+        font-size: 1.1em;
+    }
+    
+    .back-button {
+        padding: 6px 10px;
+        font-size: 0.8em;
+    }
+    
+    .back-button svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* 调整面板top值以适应较小的header */
+    .flight-data-panel,
+    .staging-panel {
+        top: 60px;
+    }
+    
+    /* 触屏控制面板优化 */
+    .touch-control-panel {
+        bottom: 105px; /* 避免与底部控制面板重叠 */
+        right: 10px;
+        padding: 8px;
+    }
+    
+    /* 触屏转向按钮移动端调整 */
+    .touch-steering-buttons {
+        gap: 10px;
+    }
+    
+    .touch-steering-btn {
+        width: 65px;
+        height: 65px;
+        border-radius: 10px;
+    }
+    
+    .touch-steering-btn .touch-btn-icon {
+        font-size: 20px;
+    }
+    
+    .touch-steering-btn .touch-btn-label {
+        font-size: 10px;
+    }
+    
+    .touch-throttle-slider {
+        width: 30px;
+        height: 100px;
+    }
+    
+    .touch-main-btn {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .touch-btn-icon {
+        font-size: 1.2em;
+    }
+    
+    .touch-btn-text {
+        font-size: 0.7em;
+    }
+    
+    /* 飞行数据面板 - 移动端调整 */
+    .flight-data-panel {
+        width: calc(50% - 25px);
+        max-width: 180px;
+        font-size: 0.85em;
+    }
+    
+    .flight-data-panel .panel-header h3 {
+        font-size: 1em;
+        margin-bottom: 10px;
+    }
+    
+    .flight-data-panel .data-item {
+        margin-bottom: 6px;
+    }
+    
+    .flight-data-panel .data-label {
+        font-size: 0.75em;
+    }
+    
+    .flight-data-panel .data-value {
+        font-size: 0.8em;
+    }
+    
+    /* 操作说明区域缩小 */
+    .controls-hint {
+        margin-top: 8px;
+    }
+    
+    .hint-title {
+        font-size: 0.8em;
+        margin-bottom: 6px;
+    }
+    
+    .hint-item {
+        padding: 2px 0;
+        font-size: 0.65em;
+    }
+    
+    .hint-keys {
+        padding: 1px 4px;
+        font-size: 0.6em;
+        min-width: 35px;
+    }
+    
+    /* 分级面板 - 移动端调整 */
+    .staging-panel {
+        width: calc(50% - 25px);
+        max-width: 180px;
+        font-size: 0.85em;
+        max-height: calc(100vh - 300px);
+        overflow-y: auto;
+    }
+    
+    .staging-panel .panel-header h3 {
+        font-size: 1em;
+        margin-bottom: 10px;
+    }
+    
+    .stage-item {
+        padding: 8px;
+        margin-bottom: 6px;
+    }
+    
+    .stage-header {
+        font-size: 0.85em;
+    }
+    
+    .stage-info {
+        font-size: 0.75em;
+    }
+    
+    .stage-engines {
+        font-size: 0.65em;
+    }
+    
+    /* 底部控制面板 - 移动端调整 */
+    .launch-control-panel {
+        display: none; /* 在移动端隐藏发射控制面板 */
+    }
+    
+    .control-buttons-new {
+        gap: 15px;
+    }
+    
+    /* 控制导航条缩小 */
+    .control-navigation .nav-bar {
+        width: 60px;
+    }
+    
+    .control-navigation .nav-labels {
+        width: 60px;
+        font-size: 0.7em;
+    }
+    
+    /* 节流阀控制缩小 */
+    .control-throttle .throttle-slider-horizontal {
+        width: 80px;
+    }
+    
+    /* 控制按钮缩小 */
+    .control-btn {
+        padding: 8px 12px;
+        font-size: 0.85em;
+    }
+    
+    .control-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* 倒计时显示调整 */
+    .countdown-display {
+        font-size: 0.9em;
+    }
+}
+
+/* 超小屏幕（手机竖屏） */
+@media (max-width: 480px) {
+    /* 右上角控制按钮组进一步调整 */
+    .touch-control-buttons {
+        top: 50px;
+        right: 10px;
+        gap: 8px;
+    }
+    
+    .touch-control-btn {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .touch-control-btn .touch-btn-icon {
+        font-size: 18px;
+    }
+    
+    /* 顶部控制栏进一步优化 */
+    .launch-header {
+        height: 45px;
+        padding: 0 10px;
+        font-size: 0.85em;
+    }
+    
+    .launch-title {
+        font-size: 1em;
+    }
+    
+    .back-button {
+        padding: 5px 8px;
+        font-size: 0.75em;
+    }
+    
+    .rocket-name {
+        font-size: 0.8em;
+    }
+    
+    /* 进一步调整面板位置 */
+    .flight-data-panel {
+        top: 55px;
+    }
+    
+    .staging-panel {
+        top: 55px;
+    }
+    
+    /* 触屏控制面板进一步优化 */
+    .touch-control-panel {
+        bottom: 95px; /* 适应更小的底部控制面板 */
+        right: 5px;
+        padding: 6px;
+        gap: 8px;
+    }
+    
+    .touch-steering-pad {
+        width: 70px;
+        height: 70px;
+        border: 1px solid rgba(135, 206, 235, 0.15); /* 超小屏幕更加透明 */
+    }
+    
+    .touch-throttle-slider {
+        width: 25px;
+        height: 80px;
+    }
+    
+    .touch-main-btn {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .touch-btn-icon {
+        font-size: 1em;
+        margin-bottom: 2px;
+    }
+    
+    .touch-btn-text {
+        font-size: 0.65em;
+    }
+    
+    /* 进一步缩小飞行数据面板 */
+    .flight-data-panel {
+        width: calc(100% - 40px);
+        left: 20px;
+        right: 20px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    /* 隐藏分级面板或移到底部 */
+    .staging-panel {
+        display: none;
+    }
+    
+    /* 或者将分级面板移到底部控制面板上方 */
+    /* .staging-panel {
+        position: fixed;
+        bottom: 105px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-height: 80px;
+        overflow-y: auto;
+    } */
+    
+    /* 底部控制面板进一步优化 */
+    .launch-control-panel {
+        display: none; /* 在小屏幕上完全隐藏发射控制面板 */
+    }
+    
+    .control-buttons-new {
+        gap: 10px;
+    }
+    
+    /* 控制元素进一步缩小 */
+    .control-navigation .nav-bar {
+        width: 50px;
+    }
+    
+    .control-navigation .nav-labels {
+        width: 50px;
+        font-size: 0.65em;
+    }
+    
+    .control-throttle .throttle-slider-horizontal {
+        width: 60px;
+        height: 16px;
+    }
+    
+    .control-throttle .throttle-handle {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .control-btn {
+        padding: 6px 8px;
+        font-size: 0.75em;
+    }
+    
+    .control-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .countdown-display {
+        font-size: 0.8em;
+    }
+    
+    /* 操作说明进一步缩小 */
+    .hint-title {
+        font-size: 0.75em;
+    }
+    
+    .hint-item {
+        font-size: 0.6em;
+    }
+    
+    .hint-keys {
+        font-size: 0.55em;
+        min-width: 30px;
+    }
+}
+
+/* 分级面板 */
+.staging-panel {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    width: 220px;
+    background: rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 15px;
+    z-index: 100;
+    color: white;
+}
+
+.stage-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.stage-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.stage-item.active {
+    background: rgba(135, 206, 235, 0.3);
+    border: 1px solid #87CEEB;
+}
+
+.stage-item.used {
+    background: rgba(255, 255, 255, 0.05);
+    opacity: 0.6;
+}
+
+.stage-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.stage-info {
+    font-size: 0.8em;
+    color: #ccc;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+}
+
+.stage-engines {
+    font-size: 0.7em;
+    color: #999;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 底部发射控制面板 */
+.launch-control-panel {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    background: rgba(0, 0, 0, 0.9);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    z-index: 1000;
+}
+
+.countdown-display {
+    text-align: center;
+    color: white;
+}
+
+.control-buttons-new {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex: 1;
+    justify-content: center;
+}
+
+/* 控制导航条样式 */
+.control-navigation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.control-navigation .nav-indicator {
+    position: relative;
+}
+
+.control-navigation .nav-bar {
+    width: 80px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    position: relative;
+}
+
+.control-navigation .nav-center {
+    position: absolute;
+    left: 50%;
+    top: -2px;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 10px;
+    background: #00ff00;
+    border-radius: 1px;
+}
+
+.control-navigation .nav-pointer {
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 10px;
+    background: #ff6b35;
+    border-radius: 1.5px;
+    transition: left 0.1s ease;
+}
+
+.control-navigation .nav-labels {
+    display: flex;
+    justify-content: space-between;
+    width: 80px;
+    margin-top: 5px;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* 控制节流阀样式 */
+.control-throttle {
+    display: flex;
+    align-items: center;
+}
+
+.control-throttle .throttle-slider-horizontal {
+    width: 120px;
+    height: 20px;
+    position: relative;
+    cursor: pointer;
+}
+
+.control-throttle .throttle-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.control-throttle .throttle-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b35, #f7931e);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.1s ease;
+}
+
+.control-throttle .throttle-handle {
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border: 2px solid #ff6b35;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    transition: left 0.1s ease;
+}
+
+.control-throttle .throttle-handle:active {
+    cursor: grabbing;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.countdown-text {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+    color: #87CEEB;
+}
+
+.countdown-number {
+    font-size: 2.5em;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    color: #ff6600;
+    text-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+}
+
+.control-buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.control-btn {
+    padding: 15px 25px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.launch-btn {
+    background: linear-gradient(145deg, #ff6600, #ff4500);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 102, 0, 0.4);
+}
+
+.launch-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 102, 0, 0.6);
+}
+
+.launch-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.abort-btn {
+    background: linear-gradient(145deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+}
+
+.abort-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+}
+
+.stage-btn {
+    background: linear-gradient(145deg, #28a745, #218838);
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+}
+
+.stage-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
+}
+
+.stage-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* 加载覆盖层 */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    color: white;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top: 3px solid #87CEEB;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    font-size: 1.2em;
+    color: #87CEEB;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .flight-data-panel,
+    .staging-panel {
+        position: fixed;
+        top: 60px;
+        width: calc(50% - 30px);
+        font-size: 0.8em;
+    }
+    
+    .flight-data-panel {
+        left: 10px;
+    }
+    
+    .staging-panel {
+        right: 10px;
+    }
+    
+    .launch-control-panel {
+        display: none; /* 在移动端隐藏发射控制面板 */
+    }
+    
+    .control-buttons {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .control-btn {
+        padding: 12px 20px;
+        min-width: 100px;
+        font-size: 0.9em;
+    }
+    
+    .countdown-number {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .flight-data-panel,
+    .staging-panel {
+        width: calc(100% - 20px);
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+    }
+
+    .staging-panel {
+        top: 200px;
+    }    .launch-header {
+        padding: 0 10px;
+    }
+    
+    .header-left {
+        gap: 10px;
+    }
+    
+    .launch-title {
+        font-size: 1.2em;
+    }
+}
+
+/* 爆炸效果样式 */
+.explosion-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.explosion-effect {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, 
+        #ff6b00 0%, 
+        #ff4444 20%, 
+        #ffaa00 40%, 
+        #ff0000 60%, 
+        rgba(255, 0, 0, 0.3) 80%, 
+        transparent 100%);
+    border-radius: 50%;
+    animation: explode 1.5s ease-out;
+    position: relative;
+}
+
+.explosion-effect::before {
+    content: '';
+    position: absolute;
+    top: -25%;
+    left: -25%;
+    right: -25%;
+    bottom: -25%;
+    background: radial-gradient(circle, 
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(255, 200, 0, 0.6) 30%,
+        transparent 70%);
+    border-radius: 50%;
+    animation: flash 0.3s ease-out;
+}
+
+.explosion-effect::after {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    right: -10%;
+    bottom: -10%;
+    background: radial-gradient(circle, 
+        rgba(255, 100, 0, 0.7) 0%,
+        rgba(255, 50, 0, 0.4) 50%,
+        transparent 100%);
+    border-radius: 50%;
+    animation: shockwave 1s ease-out;
+}
+
+.explosion-particles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.explosion-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #ffaa00;
+    border-radius: 50%;
+    animation: particle-fly 2s ease-out forwards;
+}
+
+.explosion-particle:nth-child(1) { transform: rotate(0deg); background: #ff4444; }
+.explosion-particle:nth-child(2) { transform: rotate(30deg); background: #ff6600; }
+.explosion-particle:nth-child(3) { transform: rotate(60deg); background: #ffaa00; }
+.explosion-particle:nth-child(4) { transform: rotate(90deg); background: #ff8800; }
+.explosion-particle:nth-child(5) { transform: rotate(120deg); background: #ff4444; }
+.explosion-particle:nth-child(6) { transform: rotate(150deg); background: #ff6600; }
+.explosion-particle:nth-child(7) { transform: rotate(180deg); background: #ffaa00; }
+.explosion-particle:nth-child(8) { transform: rotate(210deg); background: #ff8800; }
+.explosion-particle:nth-child(9) { transform: rotate(240deg); background: #ff4444; }
+.explosion-particle:nth-child(10) { transform: rotate(270deg); background: #ff6600; }
+.explosion-particle:nth-child(11) { transform: rotate(300deg); background: #ffaa00; }
+.explosion-particle:nth-child(12) { transform: rotate(330deg); background: #ff8800; }
+
+@keyframes explode {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes flash {
+    0% {
+        opacity: 1;
+        transform: scale(0);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.2);
+    }
+}
+
+@keyframes shockwave {
+    0% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(3);
+    }
+}
+
+@keyframes particle-fly {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+}
+
+.rocket-crashed {
+    display: none !important;
+}
+
+/* 着陆状态样式 */
+.rocket-landed {
+    opacity: 0.8;
+    filter: grayscale(20%);
+}
+
+.rocket-landed::after {
+    /* 文本将通过JavaScript动态设置 */
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 255, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    animation: landingBadge 2s ease-in-out infinite alternate;
+    z-index: 1001;
+}
+
+@keyframes landingBadge {
+    0% {
+        opacity: 0.7;
+        transform: translateX(-50%) translateY(0px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+/* 触屏控制面板在不同屏幕尺寸的适配 */
+@media (max-width: 1023px) {
+    .touch-control-panel {
+        bottom: 120px; /* 桌面底部控制面板高度 */
+    }
+}
+
+@media (max-width: 768px) {
+    .touch-control-panel {
+        bottom: 100px; /* 平板底部控制面板高度 */
+        height: 180px;
+    }
+}
+
+@media (max-width: 480px) {
+    .touch-control-panel {
+        bottom: 90px; /* 手机底部控制面板高度 */
+        height: 160px;
+        padding: 15px;
+    }
+}
+
+/* 极小屏幕适配 */
+@media (max-width: 360px) {
+    /* 右上角控制按钮组极小屏幕调整 */
+    .touch-control-buttons {
+        top: 8px;
+        right: 8px;
+        gap: 6px;
+    }
+    
+    .touch-control-btn {
+        width: 38px;
+        height: 38px;
+    }
+    
+    .touch-control-btn .touch-btn-icon {
+        font-size: 16px;
+    }
+    
+    .launch-header {
+        height: 40px;
+        font-size: 0.8em;
+    }
+    
+    .flight-data-panel {
+        top: 50px;
+        padding: 10px;
+        font-size: 0.75em;
+        width: calc(100% - 40px);
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+    }
+    
+    .staging-panel {
+        display: none; /* 在极小屏幕上完全隐藏分级面板 */
+    }
+    
+    .launch-control-panel {
+        display: none; /* 在小屏幕上完全隐藏发射控制面板 */
+    }
+    
+    .control-buttons-new {
+        gap: 8px;
+    }
+    
+    .control-btn {
+        padding: 4px 6px;
+        font-size: 0.7em;
+    }
+    
+    .touch-control-panel {
+        bottom: 80px;
+        height: 140px;
+        padding: 10px;
+    }
+}
+
+/* ============================
+   世界坐标系统样式
+   ============================ */
+
+/* 世界坐标系统 - 发射台 */
+.world-launch-pad {
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    transition: all 0.1s linear;
+}
+
+.world-launch-pad .launch-tower-main {
+    width: 12px;
+    height: 150px;
+    background: linear-gradient(to bottom, #666 0%, #444 50%, #333 100%);
+    border: 1px solid #888;
+    border-radius: 2px;
+    position: relative;
+    margin: 0 auto 5px auto;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+}
+
+.world-launch-pad .launch-tower-main::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: -8px;
+    right: -8px;
+    height: 3px;
+    background: #555;
+    border: 1px solid #777;
+    border-radius: 2px;
+}
+
+.world-launch-pad .launch-tower-main::after {
+    content: '';
+    position: absolute;
+    top: 40px;
+    left: -6px;
+    right: -6px;
+    height: 2px;
+    background: #666;
+    border-radius: 1px;
+}
+
+.world-launch-pad .launch-platform {
+    width: 80px;
+    height: 8px;
+    background: linear-gradient(to bottom, #777 0%, #555 100%);
+    border: 1px solid #888;
+    border-radius: 3px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+.world-launch-pad .launch-platform::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -5px;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 5px;
+    background: #666;
+    border: 1px solid #888;
+    border-radius: 2px;
+}
+
+/* 世界坐标系统 - 地面 */
+.world-ground {
+    background: linear-gradient(to bottom, 
+        #4a5d23 0%,     /* 草地绿 */
+        #3a4a1c 30%,    /* 深绿 */
+        #2d3a18 60%,    /* 更深的绿 */
+        #1f2a10 100%    /* 土壤色 */
+    );
+    border-top: 3px solid #5a6d33;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    transition: all 0.1s linear;
+}
+
+.world-ground::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 2px,
+        rgba(255,255,255,0.1) 2px,
+        rgba(255,255,255,0.1) 4px
+    );
+    pointer-events: none;
+}
+
+/* 世界坐标系统 - 天空 */
+.world-sky {
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    transition: background 2s ease-in-out;
+}
+
+/* 确保火箭容器在正确的层级 */
+.rocket-container {
+    z-index: 10 !important;
+    transition: all 0.1s linear;
+}
+
+/* 隐藏原有的静态发射台元素 */
+.launch-tower,
+.launch-platform,
+.rocket-display::before {
+    display: none !important;
+}
+
+/* 轨道数据显示 */
+.orbital-data {
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+.orbital-data h3 {
+    margin: 0 0 10px 0;
+    color: #4CAF50;
+    font-size: 16px;
+}
+
+.orbital-data .data-row {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.orbital-data .label {
+    color: #ccc;
+}
+
+.orbital-data .value {
+    color: #fff;
+    font-weight: bold;
+}
+
+.orbital-data .status {
+    color: #4CAF50;
+}
+
+/* 地图覆盖层样式 */
+.map-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+}
+
+.map-container {
+    background: rgba(20, 20, 30, 0.95);
+    border: 2px solid #4CAF50;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px;
+    height: 90%;
+    max-height: 700px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+}
+
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(76, 175, 80, 0.2);
+    border-bottom: 1px solid #4CAF50;
+    border-radius: 13px 13px 0 0;
+}
+
+.map-header h3 {
+    margin: 0;
+    color: #4CAF50;
+    font-size: 18px;
+    font-family: 'Arial', sans-serif;
+}
+
+.map-close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.map-close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.map-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, rgba(0, 10, 30, 0.8), rgba(0, 5, 15, 0.9));
+}
+
+#mapSvg {
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    max-height: 500px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+/* 轨道标记样式 */
+.orbit-marker {
+    cursor: pointer;
+    transition: r 0.2s ease, opacity 0.2s ease;
+}
+
+.orbit-marker:hover {
+    r: 5;
+    opacity: 0.8;
+}
+
+/* 近地点标记 */
+.orbit-marker[fill="#FF6B6B"] {
+    filter: drop-shadow(0 0 3px #FF6B6B);
+}
+
+/* 远地点标记 */
+.orbit-marker[fill="#4ECDC4"] {
+    filter: drop-shadow(0 0 3px #4ECDC4);
+}
+
+.map-info {
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid #4CAF50;
+    border-radius: 0 0 13px 13px;
+}
+
+.map-data {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+}
+
+.map-data span {
+    color: #ccc;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+}
+
+.map-data span span {
+    color: #fff;
+    font-weight: bold;
+}
+
+.map-hint {
+    text-align: center;
+    color: #888;
+    font-size: 11px;
+    font-style: italic;
+}
+
+/* 时间加速显示 (仅桌面端) */
+.time-acceleration-display {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #4CAF50;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #4CAF50;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    min-width: 80px;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+.time-accel-label {
+    font-size: 10px;
+    color: #ccc;
+    margin-bottom: 2px;
+}
+
+.time-accel-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+/* 桌面端专用元素 */
+.desktop-only {
+    display: block;
+}
+
+/* 移动端专用元素 */
+.mobile-only {
+    display: none;
+}
+
+/* 响应式设计 - 移动设备 */
+@media (max-width: 768px) {
+    /* 隐藏桌面端专用元素 */
+    .desktop-only {
+        display: none !important;
+    }
+    
+    /* 显示移动端专用元素 */
+    .mobile-only {
+        display: flex !important;
+    }
+    
+    /* 默认显示触屏控制 */
+    .touch-control-buttons,
+    .touch-time-controls {
+        display: flex !important;
+    }
+    
+    /* 调整触屏按钮大小 */
+    .touch-control-btn {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .time-control-btn {
+        width: 45px;
+        height: 32px;
+        font-size: 10px;
+    }
+    
+    /* 调整位置避免遮挡 */
+    .touch-control-buttons {
+        top: 15px;
+        right: 15px;
+        gap: 6px;
+    }
+    
+    .touch-time-controls {
+        top: 15px;
+        left: 15px;
+        gap: 6px;
+    }
+    
+    /* 地图区域适配 */
+    .orbital-map-container {
+        height: 60vh;
+        min-height: 300px;
+    }
+    
+    /* 信息面板适配 */
+    .info-panel {
+        font-size: 12px;
+        padding: 8px;
+    }
+    
+    .info-item {
+        margin-bottom: 4px;
+    }
+    
+    .info-value {
+        font-size: 11px;
+    }
+    
+    /* 隐藏桌面端控制提示 */
+    .controls-hint {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    /* 小屏幕进一步调整 */
+    .touch-control-btn {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .touch-control-btn .touch-btn-icon {
+        font-size: 18px;
+    }
+    
+    .touch-control-btn .touch-btn-label {
+        font-size: 9px;
+    }
+    
+    .time-control-btn {
+        width: 40px;
+        height: 30px;
+        font-size: 9px;
+    }
+    
+    /* 更紧凑的布局 */
+    .touch-control-buttons,
+    .touch-time-controls {
+        gap: 4px;
+    }
+    
+    .touch-control-buttons {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .touch-time-controls {
+        top: 10px;
+        left: 10px;
+    }
+    
+    /* 地图信息文字更小 */
+    .map-info {
+        padding: 10px 15px;
+    }
+    
+    .map-data span {
+        font-size: 10px;
+    }
+    
+    .map-hint {
+        font-size: 9px;
+    }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+    /* 确保触摸设备显示触屏控制 */
+    .touch-control-buttons,
+    .touch-time-controls {
+        display: flex !important;
+    }
+    
+    /* 增加触摸区域 */
+    .touch-control-btn,
+    .time-control-btn,
+    .map-control-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    /* 移除hover效果，使用active效果 */
+    .touch-control-btn:hover,
+    .time-control-btn:hover,
+    .map-control-btn:hover {
+        transform: none;
+        background: rgba(0, 0, 0, 0.7);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* 增强触摸反馈 */
+    .touch-control-btn:active,
+    .time-control-btn:active,
+    .map-control-btn:active {
+        transform: scale(0.9);
+        background: rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* 横屏优化 */
+@media (max-width: 768px) and (orientation: landscape) {
+    .orbital-map-container {
+        height: 70vh;
+    }
+    
+    .touch-control-buttons {
+        flex-direction: row;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .touch-time-controls {
+        flex-direction: row;
+        top: 10px;
+        left: 10px;
+    }
+}

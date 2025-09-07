@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-i18n-title="main.gameTitle">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>easy-ksp</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/i18n.css">
+</head>
+<body>
+    <!-- 语言切换器 -->
+    <div id="languageSwitcher" class="language-switcher bottom-left"></div>
+    
+    <div class="starfield">
+        <div class="earth-wrap">
+            <img src="imgs/earth.png" alt="地球" class="earth" />
+        </div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+    
+    <div class="container">
+        <header class="main-header">
+            <h1 class="game-title">
+                <span class="title-text" data-i18n="main.gameTitle">太空计划</span>
+            </h1>
+        </header>
+        
+        <main class="main-menu">
+            <div class="menu-container">
+                <div class="menu-item rocket-builder">
+                    <div class="menu-icon">
+                        <img src="imgs/rocket.svg" alt="火箭图标" style="width: 100px; height: 100px;" />
+                    </div>
+                    <h2 data-i18n="main.rocketBuilder.title">载具装配大楼</h2>
+                    <p data-i18n="main.rocketBuilder.description">设计和建造你的火箭</p>
+                    <button class="menu-button" onclick="handleMenuClick('rocket-builder')">
+                        <span data-i18n="main.rocketBuilder.button">进入装配</span>
+                    </button>
+                </div>
+                
+                <div class="menu-item tracking-station">
+                    <div class="menu-icon">
+                        <img src="imgs/tracking-station.svg" alt="追踪站图标" style="width: 100px; height: 100px;" />
+                    </div>
+                    <h2 data-i18n="main.trackingStation.title">追踪站</h2>
+                    <p data-i18n="main.trackingStation.description">监控你的任务和载具</p>
+                    <button class="menu-button" onclick="handleMenuClick('tracking-station')">
+                        <span data-i18n="main.trackingStation.button">进入追踪</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="game-footer">
+        </footer>
+    </div>
+    
+    <script src="js/i18n/i18n.js"></script>
+    <script src="js/i18n/language-switcher.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // 初始化国际化
+        document.addEventListener('DOMContentLoaded', async () => {
+            await window.i18n.init();
+            
+            // 创建语言切换器
+            new LanguageSwitcher('#languageSwitcher', {
+                style: 'simple',
+                showFlag: true,
+                showText: false,
+                position: 'bottom-left'
+            });
+        });
+    </script>
+</body>
+</html>

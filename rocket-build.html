@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-i18nntiite="rocketBuilder.title">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <title>easy-ksp</title>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/i18n.css">
+        <link rel="stylesheet" href="css/rocket-build.css">
+    </head>
+    <body>
+        <div id="languageSwitcher" class="language-switcher bottom-left"></div>
+
+        <div class="builder-container"> <header class="builder-header"> <div
+                    class="header-left">
+                    <button class="back-button" onclick="goBack()">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path
+                                d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                                fill="currentColor" />
+                        </svg>
+                        <span data-i18n="rocketBuilder.backToHome">back</span>
+                    </button>
+                    <h1 class="builder-title"
+                        data-i18n="rocketBuilder.title">build rocket</h1>
+                </div>
+                <div class="header-right">
+                    <button class="action-button launch-button"
+                        onclick="launchRocket()">
+                        <svg viewBox="0 0 24 24" width="18" height="18">
+                            <path
+                                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                                fill="currentColor" />
+                        </svg> <span
+                            data-i18n="rocketBuilder.launch">launch</span>
+                    </button>
+                </div>
+            </header>
+            <div class="mobile-panel-toggle">
+
+                <button class="panel-toggle-btn active" data-panel="assembly"
+                    data-i18n="rocketBuilder.panels.assembly">1</button>
+                <button class="panel-toggle-btn" data-panel="parts"
+                    data-i18n="rocketBuilder.panels.parts">2</button>
+                <button class="panel-toggle-btn" data-panel="info"
+                    data-i18n="rocketBuilder.panels.info">3</button>
+            </div>
+
+            <main class="builder-workspace">
+                <aside class="parts-panel" id="partsPanel">
+                    <div class="panel-header">
+                        <h3
+                            data-i18n="rocketBuilder.partsLibrary.title">lib</h3>
+                        <div class="parts-filter">
+                            <button class="filter-btn active"
+                                data-category="all"
+                                data-i18n="rocketBuilder.partsLibrary.categories.all">4</button>
+                            <button class="filter-btn" data-category="command"
+                                data-i18n="rocketBuilder.partsLibrary.categories.command">5</button>
+                            <button class="filter-btn"
+                                data-category="propulsion"
+                                data-i18n="rocketBuilder.partsLibrary.categories.engines">6</button>
+                            <button class="filter-btn"
+                                data-category="structural"
+                                data-i18n="rocketBuilder.partsLibrary.categories.structural">7</button>
+                        </div>
+                    </div>
+                    <div class="parts-list" id="partsList">
+                    </div> </aside>
+                <div class="assembly-area"> <div
+                        class="assembly-canvas-container">
+                        <div class="assembly-canvas" id="assemblyCanvas">
+                            <div class="rocket-assembly" id="rocketAssembly">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="assembly-controls">
+                        <button class="control-btn" onclick="clearAssembly()">
+                            <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path
+                                    d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                                    fill="currentColor" />
+                            </svg> <span data-i18n="common.clear">clear</span>
+                        </button>
+                        <button class="control-btn" id="resetViewBtn"
+                            onclick="rocketBuilder.resetView()">
+                            <svg viewBox="0 0 24 24" width="16" height="16">
+                                <path
+                                    d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span data-i18n="common.resetView">reset
+                                viewport</span>
+                        </button>
+                    </div>
+                </div>
+                <aside class="info-panel" id="infoPanel">
+                    <div class="panel-section">
+                        <h4 data-i18n="rocketBuilder.infoPanel.title">info</h4>
+                        <div class="rocket-stats" id="rocketStats">
+                            <div class="stat-item">
+                                <span class="stat-label"
+                                    data-i18n="rocketBuilder.infoPanel.stats.totalMass">mass:</span>
+                                <span class="stat-value" id="totalMass">0 t</span>
+                            </div> <div class="stat-item">
+                                <span class="stat-label" data-i18n="rocketBuilder.infoPanel.stats.totalThrust">thrust:</span>
+                                <span class="stat-value" id="totalThrust">0 kN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <h4
+                            data-i18n="rocketBuilder.selectedPart.title">selected</h4>
+                        <div class="selected-part-info" id="selectedPartInfo">
+                            <p class="no-selection"
+                                data-i18n="rocketBuilder.selectedPart.none">do not selected</p>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <h4 data-i18n="rocketBuilder.help.title">tips</h4>
+                        <div class="help-text">
+                            <p data-i18n="rocketBuilder.help.dragRoot">1</p>
+                            <p data-i18n="rocketBuilder.help.dragConnect">2</p>
+                            <p data-i18n="rocketBuilder.help.dragMove">3</p>
+                            <p data-i18n="rocketBuilder.help.dragView">4</p>
+                            <p data-i18n="rocketBuilder.help.clickInfo">5</p>
+                            <p data-i18n="rocketBuilder.help.rightClick">6</p>
+                            <p data-i18n="rocketBuilder.help.zoom">7</p>
+                        </div>
+                    </div>
+                </aside>
+            </main>
+        </div>
+
+        <script src="js/i18n/i18n.js"></script>
+        <script src="js/i18n/language-switcher.js"></script>
+        <script src="js/i18n/i18n-parts.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/rocket-parts.js"></script>
+        <script src="js/rocket-build.js"></script>
+        <script>
+     document.addEventListener('DOMContentLoaded', async () => {
+           await window.i18n.init();
+            
+            if (window.I18nRocketParts) {
+                window.i18nRocketParts = new I18nRocketParts();
+             await window.i18nRocketParts.init();            }
+         
+            new LanguageSwitcher('#languageSwitcher', {
+             style: 'simple',
+             showFlag: true,
+             showText: false,
+            position: 'bottom-left'
+            });
+     });
+  </script>
+    </body>
+</html>

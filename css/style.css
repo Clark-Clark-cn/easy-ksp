@@ -1,0 +1,334 @@
+/* 基础样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #070a1a 0%, #10152b 50%, #181c2f 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    color: #ffffff;
+}
+
+/* 星空背景动画 */
+.starfield {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+/* 地球背景 */
+/* 地球容器：用于在页面中居中显示 */
+.earth-wrap {
+    position: fixed;
+    inset: 0; /* top:0; right:0; bottom:0; left:0 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none; /* 背景元素不阻塞交互 */
+    z-index: -1;
+}
+
+.earth {
+    display: block; /* 避免 inline 元素产生基线偏移 */
+    width: 90vmin;
+    height: auto; /* 保持原始纵横比 */
+    max-width: 90%;
+    max-height: 80vh;
+    transform-origin: center center;
+    filter: drop-shadow(0 20px 60px rgba(33, 150, 243, 0.25)) 
+            drop-shadow(0 0 120px rgba(33, 150, 243, 0.18));
+    animation: earthRotate 60s infinite linear;
+    pointer-events: none;
+    object-fit: contain; /* 保证在任何容器内都按比例展示 */
+}
+
+@keyframes earthRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle 2s infinite;
+}
+
+.star:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+.star:nth-child(2) { top: 20%; left: 60%; animation-delay: 0.5s; }
+.star:nth-child(3) { top: 20%; left: 90%; animation-delay: 1s; }
+.star:nth-child(4) { top: 40%; left: 10%; animation-delay: 1.5s; }
+.star:nth-child(5) { top: 40%; left: 40%; animation-delay: 0.2s; }
+.star:nth-child(6) { top: 40%; left: 80%; animation-delay: 0.8s; }
+.star:nth-child(7) { top: 60%; left: 30%; animation-delay: 1.2s; }
+.star:nth-child(8) { top: 60%; left: 70%; animation-delay: 0.7s; }
+.star:nth-child(9) { top: 80%; left: 15%; animation-delay: 1.8s; }
+.star:nth-child(10) { top: 80%; left: 85%; animation-delay: 0.3s; }
+.star:nth-child(11) { top: 10%; left: 50%; animation-delay: 1.3s; }
+.star:nth-child(12) { top: 30%; left: 75%; animation-delay: 0.9s; }
+.star:nth-child(13) { top: 50%; left: 25%; animation-delay: 1.7s; }
+.star:nth-child(14) { top: 70%; left: 55%; animation-delay: 0.4s; }
+.star:nth-child(15) { top: 90%; left: 45%; animation-delay: 1.1s; }
+.star:nth-child(16) { top: 15%; left: 35%; animation-delay: 0.6s; }
+.star:nth-child(17) { top: 35%; left: 65%; animation-delay: 1.4s; }
+.star:nth-child(18) { top: 55%; left: 5%; animation-delay: 0.1s; }
+.star:nth-child(19) { top: 75%; left: 95%; animation-delay: 1.6s; }
+.star:nth-child(20) { top: 85%; left: 25%; animation-delay: 1.9s; }
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* 容器和布局 */
+.container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 头部样式 */
+.main-header {
+    text-align: center;
+    padding: 40px 0;
+    animation: fadeInDown 1s ease-out;
+}
+
+.game-title {
+    margin-bottom: 20px;
+}
+
+.title-text {
+    display: block;
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    background: linear-gradient(45deg, #4fc3f7, #29b6f6, #03a9f4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(79, 195, 247, 0.5);
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from { filter: drop-shadow(0 0 5px rgba(79, 195, 247, 0.8)); }
+    to { filter: drop-shadow(0 0 20px rgba(79, 195, 247, 0.8)); }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 主菜单样式 */
+.main-menu {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+}
+
+.menu-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    width: 100%;
+    max-width: 800px;
+}
+
+.menu-item {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 40px 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    animation: fadeInUp 1s ease-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-item:hover {
+    transform: translateY(-10px);
+    border-color: #4fc3f7;
+    box-shadow: 0 20px 40px rgba(79, 195, 247, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.menu-item:hover .menu-icon svg {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.menu-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    transition: transform 0.3s ease;
+}
+
+.menu-icon svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+    transition: transform 0.3s ease;
+}
+
+.menu-item h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    color: #4fc3f7;
+    font-weight: 600;
+}
+
+.menu-item p {
+    color: #b3c6f0;
+    margin-bottom: 25px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.menu-button {
+    background: linear-gradient(45deg, #f7e34f, #7bf629);
+    border: none;
+    border-radius: 30px;
+    padding: 15px 30px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(169, 247, 79, 0.405);
+}
+
+.menu-button:active {
+    transform: scale(0.98);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.rocket-builder {
+    animation-delay: 0.2s;
+}
+
+.tracking-station {
+    animation-delay: 0.4s;
+}
+
+/* 底部样式 */
+.game-footer {
+    padding: 30px 0;
+    text-align: center;
+}
+
+@keyframes orbit {
+    0% { transform: rotate(0deg) translateX(30px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(30px) rotate(-360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .title-text {
+        font-size: 2.2rem;
+    }
+    
+    .menu-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 0 10px;
+    }
+    
+    .menu-item {
+        padding: 30px 20px;
+    }
+    
+    .menu-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .menu-item h2 {
+        font-size: 1.5rem;
+    }
+    
+    .container {
+        padding: 0 15px;
+    }
+    
+    .main-header {
+        padding: 30px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .title-text {
+        font-size: 1.8rem;
+    }
+    
+    .menu-item {
+        padding: 25px 15px;
+    }
+    
+    .menu-button {
+        padding: 12px 25px;
+        font-size: 1rem;
+    }
+}
+
+/* 深色主题优化 */
+@media (prefers-color-scheme: dark) {
+    .menu-item {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+    
+    .menu-item:hover {
+        background: rgba(255, 255, 255, 0.12);
+    }
+}

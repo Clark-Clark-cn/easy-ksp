@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-i18n-title="launchPad.title">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发射台 - WSP</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/launch-pad.css">
+    <link rel="stylesheet" href="css/i18n.css">
+</head>
+<body>
+    <div id="languageSwitcher" class="language-switcher bottom-left"></div>
+    
+    <div class="launch-container">
+        <div class="world-background" id="worldBackground">
+        </div>
+        
+        <div class="rocket-display" id="rocketDisplay">
+        </div>
+
+        <header class="launch-header">
+            <div class="header-left">
+                <button class="back-button" onclick="goBackToAssembly()">
+                    <svg viewBox="0 0 24 24" width="20" height="20">
+                        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/>
+                    </svg>
+                    <span data-i18n="launchPad.backToAssembly">返回装配</span>
+                </button>
+                <h1 class="launch-title" data-i18n="launchPad.title">发射台</h1>
+            </div>
+            <div class="header-right">
+                <div class="rocket-name" id="rocketName" data-i18n="rocketBuilder.infoPanel.unnamed">未命名载具</div>
+            </div>
+        </header>
+
+        <!-- 左侧飞行数据面板 -->
+        <div class="flight-data-panel">
+            <div class="panel-header">
+                <h3 data-i18n="launchPad.flightData.title">飞行数据</h3>
+            </div>
+            <div class="data-item">
+                <span class="data-label" data-i18n="launchPad.flightData.altitude">高度</span>
+                <span class="data-value" id="altitude">0 m</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label" data-i18n="launchPad.flightData.totalVelocity">总速度</span>
+                <span class="data-value" id="totalVelocity">0 m/s</span>
+            </div>
+            <div class="data-item">
+                <span class="data-label" data-i18n="launchPad.flightData.fuel">液体燃料</span>
+                <span class="data-value" id="liquidFuel">0</span>
+            </div>
+            
+            <div class="orbital-section">
+                <div class="data-item">
+                    <span class="data-label" data-i18n="launchPad.orbital.periapsis">近地点</span>
+                    <span class="data-value" id="periapsisAltitude">- km</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-label" data-i18n="launchPad.orbital.apoapsis">远地点</span>
+                    <span class="data-value" id="apoapsisAltitude">- km</span>
+                </div>
+            </div>
+            
+            <!-- 操作说明 -->
+            <div class="data-separator"></div>
+            <div class="controls-hint">
+                <div class="hint-title" data-i18n="launchPad.controlsHints.title">控制提示</div>
+                <div class="hint-item">
+                    <span class="hint-keys">A/D</span>
+                    <span class="hint-desc" data-i18n="launchPad.controlsHints.steering">左右转向</span>
+                </div>
+                <div class="hint-item">
+                    <span class="hint-keys">Shift/Ctrl</span>
+                    <span class="hint-desc" data-i18n="launchPad.controlsHints.throttleAdjust">±1% 推力</span>
+                </div>
+                <div class="hint-item">
+                    <span class="hint-keys">Z/X</span>
+                    <span class="hint-desc" data-i18n="launchPad.controlsHints.throttleMinMax">100%/0% 推力</span>
+                </div>
+                <div class="hint-item">
+                    <span class="hint-keys">M</span>
+                    <span class="hint-desc" data-i18n="launchPad.controlsHints.mapView">地图视图</span>
+                </div>
+                <div class="hint-item">
+                    <span class="hint-keys">number key</span>
+                    <span class="hint-desc" data-i18n="launchPad.controlsHints.timeAcceleration">时间加速</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部发射控制面板 -->
+        <div class="launch-control-panel">
+            <div class="countdown-display">
+                <div class="countdown-text" id="countdownText" data-i18n="launchPad.status.ready">准备就绪</div>
+                <div class="countdown-number" id="countdownNumber"></div>
+            </div>
+            
+            <!-- 时间加速显示 (仅桌面端) -->
+            <div class="time-acceleration-display desktop-only">
+                <div class="time-accel-label" data-i18n="launchPad.status.timeAcceleration">时间加速</div>
+                <div class="time-accel-value" id="timeAccelValue">×1</div>
+            </div>
+            
+            <div class="control-buttons-new">
+                <div class="control-navigation">
+                    <div class="nav-indicator">
+                        <div class="nav-bar">
+                            <div class="nav-center"></div>
+                            <div class="nav-pointer" id="navPointer"></div>
+                        </div>
+                        <div class="nav-labels">
+                            <span class="nav-label left">L</span>
+                            <span class="nav-label center">^</span>
+                            <span class="nav-label right">R</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-throttle">
+                    <div class="throttle-slider-horizontal" id="throttleSliderHorizontal">
+                        <div class="throttle-track">
+                            <div class="throttle-fill" id="throttleFill"></div>
+                        </div>
+                        <div class="throttle-handle" id="throttleHandle"></div>
+                    </div>
+                </div>
+                
+                <button class="control-btn launch-btn" id="launchBtn" onclick="startLaunch()">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/>
+                    </svg>
+                    <span data-i18n="launchPad.controls.launch">发射</span>
+                </button>
+                
+                <button class="control-btn stage-btn" id="stageBtn" onclick="activateNextStage()">
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" fill="currentColor"/>
+                    </svg>
+                    <span data-i18n="launchPad.controls.stage">分离</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="touch-time-controls mobile-only" id="touchTimeControls">
+            <div class="time-control-title" data-i18n="launchPad.controls.timeAcceleration">时间加速</div>
+            <div class="time-control-buttons">
+                <button class="time-control-btn" id="timeAccel1x">1×</button>
+                <button class="time-control-btn" id="timeAccel5x">5×</button>
+                <button class="time-control-btn" id="timeAccel10x">10×</button>
+                <button class="time-control-btn" id="timeAccel50x">50×</button>
+                <button class="time-control-btn" id="timeAccel100x">100×</button>
+                <button class="time-control-btn" id="timeAccel1000x">1000×</button>
+                <button class="time-control-btn" id="timeAccel10000x">10000×</button>
+                <button class="time-control-btn" id="timeAccel100000x">100000×</button>
+            </div>
+        </div>
+
+        <div class="touch-control-buttons" id="touchControlButtons">
+            <button class="touch-control-btn touch-launch-btn" id="touchLaunchBtn">
+                <div class="touch-btn-icon">🚀</div>
+                <div class="touch-btn-label" data-i18n="launchPad.controls.launch">发射</div>
+            </button>
+            <button class="touch-control-btn touch-stage-btn" id="touchStageBtn">
+                <div class="touch-btn-icon">⚡</div>
+                <div class="touch-btn-label" data-i18n="launchPad.controls.stage">分离</div>
+            </button>
+            <button class="touch-control-btn touch-map-btn" id="touchMapBtn">
+                <div class="touch-btn-icon">🗺️</div>
+                <div class="touch-btn-label" data-i18n="launchPad.controlsHints.mapView">地图</div>
+            </button>
+        </div>
+
+        <!-- 触屏控制面板 (只在触屏设备上显示) -->
+        <div class="touch-control-panel" id="touchControlPanel">
+            <!-- 左侧转向控制区 -->
+            <div class="touch-steering-area">
+                <div class="touch-steering-buttons">
+                    <button class="touch-steering-btn touch-left-btn" id="touchLeftBtn">
+                        <div class="touch-btn-icon">←</div>
+                        <div class="touch-btn-label" data-i18n="launchPad.controls.turnLeft">左转</div>
+                    </button>
+                    <button class="touch-steering-btn touch-right-btn" id="touchRightBtn">
+                        <div class="touch-btn-icon">→</div>
+                        <div class="touch-btn-label" data-i18n="launchPad.controls.turnRight">右转</div>
+                    </button>
+                </div>
+                <div class="touch-angle-display">
+                    <span id="touchSteeringAngle">0°</span>
+                </div>
+            </div>
+
+            <!-- 右侧节流阀控制区 -->
+            <div class="touch-throttle-area">
+                <div class="touch-throttle-slider" id="touchThrottleSlider">
+                    <div class="touch-throttle-track">
+                        <div class="touch-throttle-fill" id="touchThrottleFill"></div>
+                    </div>
+                    <div class="touch-throttle-handle" id="touchThrottleHandle"></div>
+                </div>
+                <div class="touch-throttle-display">
+                    <span id="touchThrottleValue">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 加载提示 -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text" data-i18n="common.loading">加载火箭数据中...</div>
+        </div>
+    </div>
+
+    <script src="js/i18n/i18n.js"></script>
+    <script src="js/i18n/language-switcher.js"></script>
+    <script src="js/rocket-parts.js"></script>
+    <script src="js/launch-simulation.js"></script>
+    <script src="js/launch-pad.js"></script>
+    <script>
+        // 初始化国际化
+        document.addEventListener('DOMContentLoaded', async () => {
+            await window.i18n.init();
+            
+            // 创建语言切换器
+            new LanguageSwitcher('#languageSwitcher', {
+                style: 'simple',
+                showFlag: true,
+                showText: false,
+                position: 'bottom-left'
+            });
+        });
+        
+        // 简单的通知系统
+        function showNotification(title, message, type = 'info') {
+            // 创建或获取通知容器
+            let container = document.getElementById('notification-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'notification-container';
+                container.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 10000;
+                `;
+                document.body.appendChild(container);
+            }
+            
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                background: ${type === 'success' ? '#4CAF50' : type === 'error' ? '#F44336' : type === 'warning' ? '#FF9800' : '#2196F3'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                animation: slideIn 0.3s ease-out;
+                max-width: 300px;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 5px;">${title}</div>
+                <div>${message}</div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // 3秒后自动移除
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

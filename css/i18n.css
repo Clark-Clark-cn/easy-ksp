@@ -1,0 +1,300 @@
+/* 国际化相关样式 */
+
+/* 语言切换器基础样式 */
+.language-switcher {
+    position: relative;
+    z-index: 1000;
+}
+
+.language-switcher button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.language-switcher .lang-flag {
+    display: inline-block;
+    margin-right: 4px;
+    font-size: 1.1em;
+}
+
+.language-switcher .lang-text {
+    display: inline-block;
+    font-size: 0.9em;
+}
+
+/* 下拉式语言切换器 */
+.lang-dropdown {
+    position: relative;
+}
+
+.lang-current {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.3);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    font-size: 0.9em;
+}
+
+.lang-current:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.lang-arrow {
+    transition: transform 0.2s ease;
+    opacity: 0.7;
+}
+
+.lang-dropdown.open .lang-arrow {
+    transform: rotate(180deg);
+}
+
+.lang-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: 4px 0 0 0;
+    padding: 0;
+    list-style: none;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.lang-dropdown.open .lang-options {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.lang-options li {
+    margin: 0;
+}
+
+.lang-options .lang-switch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 12px;
+    color: #ffffff;
+    text-align: left;
+    border: none;
+    background: none;
+    font-size: 0.9em;
+}
+
+.lang-options .lang-switch:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.lang-options .lang-switch.active {
+    background: rgba(79, 172, 254, 0.2);
+    color: #4facfe;
+}
+
+/* 按钮组式语言切换器 */
+.lang-buttons {
+    display: flex;
+    gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.3);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.lang-buttons .lang-switch {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    color: #ffffff;
+    background: none;
+    border: none;
+    font-size: 0.9em;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
+.lang-buttons .lang-switch:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.lang-buttons .lang-switch.active {
+    opacity: 1;
+    background: rgba(79, 172, 254, 0.2);
+    color: #4facfe;
+}
+
+.lang-buttons .lang-switch:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 简单切换按钮 */
+.lang-switch.simple {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.3);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    font-size: 0.85em;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+
+.lang-switch.simple:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+/* 定位样式 */
+.language-switcher.top-right {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.language-switcher.top-left {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.language-switcher.bottom-right {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.language-switcher.bottom-left {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1001;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .language-switcher.top-right {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .language-switcher.bottom-left {
+        bottom: 10px;
+        left: 10px;
+    }
+    
+    .language-switcher .lang-text {
+        display: none;
+    }
+    
+    .lang-current,
+    .lang-buttons .lang-switch,
+    .lang-switch.simple {
+        padding: 6px 8px;
+    }
+    
+    .lang-options .lang-switch {
+        padding: 8px 10px;
+    }
+}
+
+/* 主题适配 */
+.dark-theme .language-switcher {
+    --bg-color: rgba(255, 255, 255, 0.1);
+    --text-color: #ffffff;
+    --border-color: rgba(255, 255, 255, 0.2);
+    --hover-bg: rgba(255, 255, 255, 0.2);
+}
+
+.light-theme .language-switcher {
+    --bg-color: rgba(0, 0, 0, 0.1);
+    --text-color: #333333;
+    --border-color: rgba(0, 0, 0, 0.2);
+    --hover-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* 动画效果 */
+.language-switcher button {
+    position: relative;
+    overflow: hidden;
+}
+
+.language-switcher button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.language-switcher button:active::after {
+    width: 200px;
+    height: 200px;
+}
+
+/* 可访问性支持 */
+.language-switcher button:focus {
+    outline: 2px solid #4facfe;
+    outline-offset: 2px;
+}
+
+.language-switcher [aria-expanded="true"] .lang-arrow {
+    transform: rotate(180deg);
+}
+
+/* 语言切换加载动画 */
+.language-switching {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.language-switching::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 1s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
